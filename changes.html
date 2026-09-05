@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>תיקונים וגרסאות | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">שקיפות</p><h1>תיקונים וגרסאות</h1>
+  <p class="lede">כל מהדורה (אתר, ספר, ספר שמע) מציינת את גרסת המחקר שעליה היא מבוססת. עותק קבוע של נתוני כל מהדורה נשמר גם אחרי עדכון האתר.</p>
+  <h2>גרסאות מחקר</h2>
+  <div class="table-wrap"><table><thead><tr><th>גרסה</th><th>תאריך</th><th>מה כלול</th><th>עותק קבוע</th></tr></thead><tbody>
+  <tr><td>1.0</td><td>2026-09-05</td><td>פרוטוקול v1.0; מאגר: Brecke, COW, Archigos, Cliopatria, UCDP; שש משפחות השערות</td><td><a href="data/">data/ (נוכחי)</a></td></tr>
+  </tbody></table></div>
+  <h2>יומן שינויים בפרוטוקול</h2>
+  <div id="cl"><div class="notice">טוען…</div></div>
+  <h2>תיקונים שפורסמו</h2>
+  <ul id="fixes"><li class="small">אין עדיין תיקונים לאחר פרסום. תיקונים יופיעו כאן עם תאריך, תיאור, ומה השתנה בספר ובאתר.</li></ul>
+</main>
+<script src="js/app.js"></script>
+<script>fetch('data/protocol-changelog.md').then(r => r.text()).then(t => { const rows = t.split('\n').filter(l => l.startsWith('|') && !l.startsWith('|---') && !l.includes('תאריך |')).map(l => l.split('|').slice(1, -1).map(s => s.trim())); document.getElementById('cl').innerHTML = rows.length ? '<div class="table-wrap"><table><thead><tr><th>תאריך</th><th>סעיף</th><th>שינוי</th><th>סוג</th></tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + esc(c).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>') + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '<p class="small">אין שינויים.</p>'; }).catch(() => document.getElementById('cl').innerHTML = '<div class="notice empty">היומן לא נטען.</div>');</script>
+</body></html>

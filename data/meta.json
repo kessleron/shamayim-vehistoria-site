@@ -1,0 +1,28 @@
+{
+ "research_version": "1.0",
+ "protocol_sha256": "97e91d781b8a507acfd3394bea374511173c88229f6c4943a16a7d25b8ffac3b",
+ "built": "2026-09-05T04:10",
+ "settings": {
+  "ephemeris": "Swiss Ephemeris se1 (pyswisseph 2.10.03)",
+  "zodiac": "tropical",
+  "center": "geocentric",
+  "time": "UT, noon when no time",
+  "calendar": "Julian before 1582-10-15, Gregorian after"
+ },
+ "counts": {
+  "events": 14455,
+  "leaders": 2802,
+  "war_onsets": 4666,
+  "polities": 1583
+ },
+ "sources": [
+  "Archigos 4.1 (Goemans, Gleditsch & Chiozza 2009)",
+  "Brecke, P. (1999) Violent Conflicts 1400 A.D. to the Present; Conflict Catalog (18 vars), Georgia Tech",
+  "Cliopatria (Seshat Global History Databank, 2025), CC BY-NC-SA",
+  "Correlates of War, extrastate war data (Sarkees & Wayman 2010; v4.0/v5.1)",
+  "Correlates of War, interstate war data (Sarkees & Wayman 2010; v4.0/v5.1)",
+  "Correlates of War, intrastate war data (Sarkees & Wayman 2010; v4.0/v5.1)",
+  "Correlates of War, nonstate war data (Sarkees & Wayman 2010; v4.0/v5.1)",
+  "UCDP/PRIO Armed Conflict Dataset v25.1 (Davies, Pettersson & Oberg 2025; Gleditsch et al. 2002)"
+ ]
+}

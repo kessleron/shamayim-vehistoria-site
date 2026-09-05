@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>מנהיג | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap"><p class="breadcrumb"><a href="leaders.html">מנהיגים</a> › <span id="bc">…</span></p><div id="content"><div class="notice">טוען…</div></div></main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  const box = document.getElementById('content'); const id = qs('id'); if (!id) { box.innerHTML = '<div class="notice empty">לא צוין מזהה. <a href="leaders.html">לרשימה</a>.</div>'; return; }
+  let L, EV; try { [L, EV] = await Promise.all([loadJSON('leaders'), loadJSON('events')]); } catch (e) { box.innerHTML = '<div class="notice error">שגיאה בטעינה.</div>'; return; }
+  const l = L.find(x => x.id === id); if (!l) { box.innerHTML = '<div class="notice empty">המנהיג לא נמצא.</div>'; return; }
+  document.title = l.n + ' | שמיים והיסטוריה'; document.getElementById('bc').textContent = l.n;
+  const VER = { agree: ['ok', 'מאומת: Archigos ו־Wikidata מסכימים'], conflict: ['bad', 'סתירה בין Archigos ל־Wikidata: ' + (l.wd || '')], no_wikidata: ['warn', 'לא נבדק מול מקור שני'], unchecked: ['warn', 'לא נבדק'] };
+  const [vc, vt] = VER[l.ver] || VER.unchecked;
+  const evs = EV.filter(e => e.pid === 'ARC-' + l.id).sort((a, b) => a.y - b.y);
+  box.innerHTML = `<p class="kicker">מנהיג · ${l.cc}</p><h1>${esc(l.n)}</h1>
+  <div class="grid c2"><div class="card"><h3>נתונים</h3><table><tr><th>תאריך לידה</th><td class="num">${l.bp === 'day' ? `${l.bd}.${l.bm}.${l.by}` : l.bp === 'year' ? `${l.by} (שנה בלבד)` : 'לא ידוע'}</td></tr><tr><th>שעת לידה</th><td>אין במאגר. ללא שעה אין אופק, בתים ומיקום ירח מדויק.</td></tr><tr><th>מקום לידה</th><td>לא במאגר</td></tr><tr><th>אמינות התאריך</th><td>${l.bp === 'day' ? `<span class="tag ${vc}">${esc(vt)}</span>` : '—'}</td></tr><tr><th>מקור</th><td>${esc(l.src)}</td></tr></table>
+  <h3>כהונות</h3><ul class="list">${l.terms.map(t => `<li><span class="y">${t.start_day}.${t.start_month}.${t.start_year}</span> עד ${t.end_day}.${t.end_month}.${t.end_year} · כניסה: ${esc(t.entry)} · יציאה: ${esc(t.exit)}</li>`).join('')}</ul>
+  <h3>אירועים מקושרים</h3><ul class="list">${evs.map(e => `<li><span class="y">${fmtDate(e)}</span><a href="event.html?id=${encodeURIComponent(e.id)}">${esc(e.n)}</a></li>`).join('') || '<li class="small">אין</li>'}</ul></div>
+  <div class="card"><h3>מפת לידה (תאריך בלבד)</h3><div id="wheel"></div><div id="note"></div></div></div>`;
+  const w = document.getElementById('wheel');
+  if (l.bp !== 'day' || !Object.keys(l.natal).length) w.innerHTML = '<div class="notice empty">אין תאריך לידה מלא, ולכן אין מפה. זו מגבלה של המקורות, לא של החישוב.</div>';
+  else { drawWheel(w, l.natal, { label: 'מפת לידה ' + l.n, orb: 8 }); const asp = hardAspects(l.natal, 8); document.getElementById('note').innerHTML = `<p class="settings">12:00 UT ביום הלידה · גאוצנטרי · טרופי · Swiss Ephemeris · ירח ±6° (ללא שעה) · ללא בתים</p><table><tr><th>גרם</th><th>מעלה</th></tr>${Object.entries(l.natal).map(([p, v]) => `<tr><td>${GLYPH[p]} ${PLANET_HE[p]}</td><td class="num">${fmtLon(v)}${p === 'moon' ? ' ±6°' : ''}</td></tr>`).join('')}</table><h3>היבטים קשים (8°)</h3>${asp.length ? '<ul>' + asp.map(a => `<li>${PLANET_HE[a.a]} ${a.nm} ${PLANET_HE[a.b]} <span class="small">(${a.dev.toFixed(1)}°)</span></li>`).join('') + '</ul>' : '<p class="small">אין.</p>'}${l.ver === 'conflict' ? '<p class="notice error">התאריך שנוי במחלוקת בין מקורות. המנהיג הוצא מהניתוח הראשי (H6).</p>' : ''}`; }
+})();
+</script>
+</body></html>

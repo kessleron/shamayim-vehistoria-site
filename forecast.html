@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>תחזית | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">תחזית 2026–2041</p><h1>מה אפשר לומר על חמש עשרה השנים הבאות</h1>
+  <p class="lede">התחזית נגזרת רק מדפוסים שעמדו בבדיקת האימות ושמרו כוח גם באירועי 2001–2024, שלא שימשו לפיתוחם. אם לא נמצאה חוקיות בעלת יכולת חיזוי, מה שמוצג כאן הוא תרחיש פרשני, וכך הוא מסומן.</p>
+  <div id="fc"><div class="notice">התחזית תפורסם אחרי סיום שלב האימות ומבחן 2001–2024. הגרסה שתפורסם תישמר כאן כקובץ מתוארך וקבוע שלא ישונה בדיעבד.</div></div>
+  <h2>גרסאות קבועות</h2>
+  <ul id="frozen"><li class="small">אין עדיין.</li></ul>
+</main>
+<script src="js/app.js"></script>
+<script>fetch('data/forecast.json').then(r => r.ok ? r.json() : null).then(f => { if (!f) return; const box = document.getElementById('fc'); box.innerHTML = `<div class="notice"><b>מעמד התחזית:</b> ${esc(f.status)} · נחתם ${esc(f.frozen_at)} · גרסת מחקר ${esc(f.research_version)}</div>` + f.items.map(it => `<section class="card"><h2 style="border:0;padding:0">${esc(it.title)}</h2><table><tr><th>חלון זמן</th><td class="num">${esc(it.window)}</td></tr><tr><th>תצורות</th><td>${esc(it.configurations)}</td></tr><tr><th>הקבלות וממצאים</th><td>${esc(it.basis)}</td></tr><tr><th>תחומים אפשריים</th><td>${esc(it.domains)}</td></tr><tr><th>תרחישים חלופיים ותמיכה</th><td>${it.scenarios.map(s => `<div><b>${esc(s.name)}</b> <span class="tag">${esc(s.support)}</span> ${esc(s.text)}</div>`).join('')}</td></tr><tr><th>קריטריון בדיקה</th><td>${esc(it.criteria)}</td></tr></table></section>`).join(''); document.getElementById('frozen').innerHTML = f.versions.map(v => `<li><a href="data/${esc(v.file)}">${esc(v.file)}</a> · ${esc(v.frozen_at)} · SHA-256 <code>${esc(v.sha256)}</code></li>`).join(''); }).catch(() => {});</script>
+</body></html>

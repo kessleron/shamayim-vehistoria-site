@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>שמיים והיסטוריה | רון קסלר</title>
+<meta name="description" content="האם תצורות פלנטריות קשורות לאירועים היסטוריים? מחקר, ספר וספר שמע בעברית מאת רון קסלר, עם מאגר נתונים פתוח ותוצאות מלאות, כולל השליליות.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">מחקר · ספר · ספר שמע</p>
+  <h1>האם השמיים יודעים משהו על ההיסטוריה?</h1>
+  <p class="lede">שאלת המחקר: האם תצורות פלנטריות שהוגדרו מראש קשורות לשינוי בשכיחותם של אירועים היסטוריים, מעבר למה שאפשר להסביר במקריות, בעונתיות, במגמות זמן ובהטיות תיעוד? ארבעת אלפים שנה, שישה מבחנים שנקבעו לפני שראינו את התוצאות, ותשובה שלא ידענו מראש.</p>
+
+  <section class="grid c3" aria-label="מספרים מרכזיים" id="stats">
+    <div class="card stat"><b id="s-events">…</b><span>רשומות היסטוריות במאגר</span></div>
+    <div class="card stat"><b id="s-wars">…</b><span>פתיחות מלחמה מתוארכות</span></div>
+    <div class="card stat"><b id="s-leaders">…</b><span>מנהיגים עם תאריך לידה</span></div>
+  </section>
+
+  <h2>מה יצא</h2>
+  <div id="findings" class="grid c2"><div class="notice">טוען תוצאות…</div></div>
+  <p class="small">כל מספר כאן מגיע מקוד שרץ על המאגר (<a href="method.html">שיטה</a>). ההשערות, הטווחים והספים נקבעו ב־<a href="method.html#protocol">פרוטוקול מתוארך</a> לפני הצלבת הנתונים.</p>
+
+  <h2>איך לקרוא את האתר</h2>
+  <div class="grid c3">
+    <div class="card"><h3><a href="timeline.html">ציר זמן</a></h3><p>כל האירועים על ציר אחד, עם זום, חיפוש וסינון לפי תקופה, אזור וסוג. אפשר להניח מעל את רגעי ההיבטים המדויקים של כוכבי הלכת האיטיים.</p></div>
+    <div class="card"><h3><a href="events.html">אירועים ומנהיגים</a></h3><p>עמוד לכל אירוע ולכל מנהיג: תאריך, רמת דיוק, מקור, ומפה אסטרולוגית שחושבה מהנתונים, עם ההגדרות גלויות.</p></div>
+    <div class="card"><h3><a href="results.html">תוצאות ומגבלות</a></h3><p>מה נתמך, מה לא, ומה אי אפשר להכריע. כולל גודלי השפעה, רווחי סמך, מספר הבדיקות, ובדיקות הרגישות.</p></div>
+  </div>
+
+  <h2>הספר וספר השמע</h2>
+  <div class="grid c2">
+    <div class="card"><h3><a href="book.html">הספר</a></h3><p>עיון סיפורי בעברית: מהשאלה, דרך מקרי הבוחן (מלחמת העולם השנייה ואחרים), עד התוצאות וההשלכות. פרק לדוגמה זמין לקריאה.</p><p id="book-status" class="small">סטטוס: בכתיבה.</p></div>
+    <div class="card"><h3><a href="audio.html">ספר השמע</a></h3><p>גרסה מלאה להאזנה, עם נספח מלווה לתרשימים. דוגמת האזנה תעלה כאן.</p><p id="audio-status" class="small">סטטוס: בהכנה.</p></div>
+  </div>
+</main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  try {
+    const m = await loadJSON('meta'); document.getElementById('s-events').textContent = m.counts.events.toLocaleString('he'); document.getElementById('s-wars').textContent = m.counts.war_onsets.toLocaleString('he');
+    const L = await loadJSON('leaders'); document.getElementById('s-leaders').textContent = L.filter(l => l.bp === 'day').length.toLocaleString('he');
+    const R = await loadJSON('results'); const box = document.getElementById('findings'); box.innerHTML = '';
+    const fam = R.summary && R.summary.families; if (!fam) { box.innerHTML = '<div class="notice empty">התוצאות המלאות עדיין לא פורסמו. הפרוטוקול והמאגר זמינים.</div>'; return; }
+    const verdict = (k, r) => { const prim = r.tests.filter(t => !/sens\.|excl\./.test(t.test)); const dev = prim.filter(t => /dev/.test(t.test)); const val = prim.filter(t => /val/.test(t.test)); const eff = t => t.rate_ratio ?? t.odds_ratio ?? Math.abs(t.spearman_rho_index_vs_detrended_onsets ?? 0); const thr = r.threshold_rr ?? r.threshold_or ?? r.threshold_rho ?? 1.3; const ok = t => eff(t) >= thr && (t.p_holm ?? 1) < 0.05; const devOk = dev.length ? dev.some(ok) : null; const valOk = val.some(ok); if (devOk && valOk) return ['ok', 'נתמכת']; if (!devOk && valOk) return ['warn', 'אות חלקי, לא יציב']; return ['bad', 'לא נתמכת']; };
+    for (const [k, r] of Object.entries(R).filter(([k]) => /^H\d/.test(k))) { const [cls, txt] = verdict(k, r); const best = r.tests.filter(t => !/sens\.|excl\./.test(t.test)).sort((a, b) => (a.p_holm ?? 1) - (b.p_holm ?? 1))[0]; const eff = best.rate_ratio ?? best.odds_ratio ?? best.spearman_rho_index_vs_detrended_onsets; box.innerHTML += `<div class="card"><span class="tag ${cls}">${txt}</span><h3>${esc(r.hypothesis_he || r.hypothesis)}</h3><p class="small">המבחן החזק ביותר: ${esc(best.test)} · גודל השפעה ${(+eff).toFixed(2)} · p אחרי תיקון Holm ${(best.p_holm ?? 1).toFixed(3)} · <a href="results.html#${k}">פירוט</a></p></div>`; }
+  } catch (e) { document.getElementById('findings').innerHTML = '<div class="notice error">שגיאה בטעינת הנתונים: ' + esc(e.message) + '</div>'; }
+})();
+</script>
+</body>
+</html>

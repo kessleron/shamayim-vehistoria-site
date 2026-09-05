@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>מנהיגים | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">מנהיגים</p>
+  <h1>מנהיגים 1875–2015</h1>
+  <p class="lede">כלל הבחירה היסטורי, לא אסטרולוגי: כל ראשי המדינה והממשלה במאגר Archigos 4.1. תאריך לידה מוצג רק כשקיים במקור; ״מאומת״ פירושו שגם Wikidata מציין את אותו יום.</p>
+  <div class="controls" role="search"><label>חיפוש<input type="search" id="q" placeholder="שם או קוד מדינה"></label><label>תאריך לידה<select id="bp"><option value="all">הכול</option><option value="day">מלא</option><option value="year">שנה בלבד</option><option value="unknown">לא ידוע</option></select></label><label>אימות<select id="ver"><option value="all">הכול</option><option value="agree">מאומת</option><option value="conflict">סתירה בין מקורות</option><option value="no_wikidata">לא נבדק</option></select></label></div>
+  <div id="status" aria-live="polite"></div>
+  <div class="table-wrap"><table><thead><tr><th>שם</th><th>מדינה</th><th>לידה</th><th>אימות</th><th>כהונות</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <p><button id="more" type="button" class="secondary">הצג עוד</button></p>
+</main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  const $ = id => document.getElementById(id); let L; try { L = await loadJSON('leaders'); } catch (e) { $('status').innerHTML = '<div class="notice error">שגיאה בטעינה.</div>'; return; }
+  const VER = { agree: ['ok', 'מאומת'], conflict: ['bad', 'סתירה'], no_wikidata: ['warn', 'לא נבדק'], unchecked: ['warn', 'לא נבדק'] };
+  let cur = [], shown = 0;
+  function run() { const q = $('q').value.trim().toLowerCase(), bp = $('bp').value, v = $('ver').value; cur = L.filter(l => (bp === 'all' || l.bp === bp) && (v === 'all' || (l.ver === v || (v === 'no_wikidata' && l.ver === 'unchecked'))) && (!q || (l.n + ' ' + l.cc).toLowerCase().includes(q))).sort((a, b) => a.n.localeCompare(b.n)); shown = 0; $('tb').innerHTML = ''; more(); $('status').innerHTML = cur.length ? `<span class="tag copper">${cur.length.toLocaleString('he')} מנהיגים</span>` : '<div class="notice empty">אין תוצאות.</div>'; }
+  function more() { const ch = cur.slice(shown, shown + 100); $('tb').insertAdjacentHTML('beforeend', ch.map(l => { const [c, t] = VER[l.ver] || VER.unchecked; return `<tr><td><a href="leader.html?id=${l.id}">${esc(l.n)}</a></td><td>${l.cc}</td><td class="num">${l.bp === 'day' ? `${l.bd}.${l.bm}.${l.by}` : l.bp === 'year' ? l.by : '—'}</td><td>${l.bp === 'day' ? `<span class="tag ${c}">${t}</span>` : ''}</td><td class="num">${l.terms.map(t => t.start_year).join(', ')}</td></tr>`; }).join('')); shown += ch.length; $('more').hidden = shown >= cur.length; }
+  ['q', 'bp', 'ver'].forEach(k => $(k).addEventListener('input', run)); $('more').onclick = more; run();
+})();
+</script>
+</body></html>

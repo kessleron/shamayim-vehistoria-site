@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>אירועים | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">מאגר האירועים</p>
+  <h1>אירועים</h1>
+  <p class="lede">כל רשומה במאגר, עם מקור, רמת דיוק ותצורות שחושבו. חיפוש וסינון עובדים על הנתונים המלאים.</p>
+  <div class="controls" role="search">
+    <label>חיפוש<input type="search" id="q" placeholder="שם, מקום"></label>
+    <label>סוג<select id="cat"><option value="all">הכול</option><option value="war_onset">פתיחת מלחמה</option><option value="leader_entry">כניסת מנהיג</option><option value="leader_exit_regular">יציאת מנהיג (סדירה)</option><option value="leader_exit_irregular">יציאת מנהיג (בלתי סדירה)</option><option value="polity_start">ייסוד ישות</option><option value="polity_end">סיום ישות</option></select></label>
+    <label>מאגר<select id="ds"><option value="all">הכול</option></select></label>
+    <label>משנה<input type="number" id="y0" style="min-width:6rem"></label><label>עד שנה<input type="number" id="y1" style="min-width:6rem"></label>
+    <label>מיון<select id="sort"><option value="t">לפי זמן</option><option value="n">לפי שם</option></select></label>
+  </div>
+  <div id="status" aria-live="polite"></div>
+  <div class="table-wrap"><table id="tbl"><thead><tr><th>תאריך</th><th>אירוע</th><th>סוג</th><th>מקום/אזור</th><th>דיוק</th><th>מאגר</th></tr></thead><tbody></tbody></table></div>
+  <p><button id="more" type="button" class="secondary">הצג עוד</button></p>
+</main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  const $ = id => document.getElementById(id); const st = $('status'), tb = $('tbl').querySelector('tbody');
+  let EV; try { EV = await loadJSON('events'); } catch (e) { st.innerHTML = '<div class="notice error">לא ניתן לטעון את המאגר.</div>'; return; }
+  EV.forEach(e => e.t = e.y + ((e.m || 7) - 1) / 12 + ((e.d || 15) - 1) / 365);
+  [...new Set(EV.map(e => e.ds))].sort().forEach(d => $('ds').insertAdjacentHTML('beforeend', `<option>${d}</option>`));
+  let shown = 0, cur = [];
+  function run() { const q = $('q').value.trim().toLowerCase(), c = $('cat').value, d = $('ds').value, y0 = +$('y0').value || -9999, y1 = +$('y1').value || 9999;
+    cur = EV.filter(e => (c === 'all' || e.c === c) && (d === 'all' || e.ds === d) && e.y >= y0 && e.y <= y1 && (!q || (e.n + ' ' + e.pl + ' ' + e.rg).toLowerCase().includes(q)));
+    cur.sort($('sort').value === 't' ? (a, b) => a.t - b.t : (a, b) => a.n.localeCompare(b.n)); shown = 0; tb.innerHTML = ''; more();
+    st.innerHTML = cur.length ? `<span class="tag copper">${cur.length.toLocaleString('he')} רשומות</span>` : '<div class="notice empty">אין רשומות תואמות.</div>'; }
+  function more() { const chunk = cur.slice(shown, shown + 100); tb.insertAdjacentHTML('beforeend', chunk.map(e => `<tr><td class="num">${fmtDate(e)}</td><td><a href="event.html?id=${encodeURIComponent(e.id)}">${esc(e.n)}</a></td><td>${e.ch}</td><td>${esc(e.pl || e.rg)}</td><td>${precHe[e.p]}</td><td>${e.ds}</td></tr>`).join('')); shown += chunk.length; $('more').hidden = shown >= cur.length; }
+  ['q', 'cat', 'ds', 'y0', 'y1', 'sort'].forEach(k => $(k).addEventListener('input', run)); $('more').onclick = more; run();
+})();
+</script>
+</body></html>

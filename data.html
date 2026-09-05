@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>נתונים והורדה | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">נתונים</p><h1>המאגר, המקורות והרישיונות</h1>
+  <p class="lede">כל מה שמוצג באתר מחושב מראש מהקבצים שלמטה. הורדה לפי זכויות השימוש של כל מקור.</p>
+  <h2>קבצים להורדה (גרסת מחקר <span id="ver">…</span>)</h2>
+  <div class="table-wrap"><table><thead><tr><th>קובץ</th><th>תוכן</th><th>רישיון</th></tr></thead><tbody>
+  <tr><td><a href="data/events.json" download>events.json</a></td><td>כל האירועים המאוחדים עם מיקומי כוכבי לכת</td><td>נגזר; ראו רישיונות המקורות למטה</td></tr>
+  <tr><td><a href="data/leaders.json" download>leaders.json</a></td><td>מנהיגים, תאריכי לידה, מיקומי לידה, סטטוס אימות</td><td>Archigos: שימוש אקדמי עם ציטוט</td></tr>
+  <tr><td><a href="data/aspects.json" download>aspects.json</a></td><td>רגעי היבטים מדויקים (צדק–פלוטו, מאדים–שבתאי), 2100 לפנה״ס–2030</td><td>CC BY 4.0 (חישוב הפרויקט)</td></tr>
+  <tr><td><a href="data/jupsat.json" download>jupsat.json</a></td><td>צמידויות צדק–שבתאי עם יסוד ומעבר יסוד</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="data/eclipses.json" download>eclipses.json</a></td><td>ליקויי חמה גלובליים</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="data/cyclic_index.json" download>cyclic_index.json</a></td><td>המדד המחזורי ומיקומי כוכבי הלכת האיטיים, שנתי</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="data/results.json" download>results.json</a></td><td>כל תוצאות המבחנים</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="data/protocol-v1.0.md" download>protocol-v1.0.md</a></td><td>הפרוטוקול הקבוע</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="data/coverage_report.md">coverage_report.md</a></td><td>דוח כיסוי, כפילויות וחוסרים</td><td>CC BY 4.0</td></tr>
+  <tr><td><a href="https://github.com/kessleron/shamayim-vehistoria" rel="noopener">קוד המקור</a></td><td>מנוע החישוב, בניית המאגר, הניתוח, האתר</td><td>AGPL-3.0 (נגזר מ־Swiss Ephemeris). הקישור יופעל עם פרסום המאגר</td></tr>
+  </tbody></table></div>
+  <h2>מקורות ראשוניים</h2>
+  <ul>
+    <li><b>Brecke, Peter.</b> Violent Conflicts 1400 A.D. to the Present in Different Regions of the World (1999); Conflict Catalog, Georgia Institute of Technology. 3,708 סכסוכים. שימוש חופשי עם ציטוט.</li>
+    <li><b>Correlates of War Project.</b> Sarkees, Meredith Reid &amp; Frank Wayman, <i>Resort to War: 1816–2007</i> (CQ Press, 2010). Inter-State v4.0, Extra-State v4.0, Non-State v4.0, Intra-State v5.1 (Dixon &amp; Sarkees). שימוש חופשי עם ציטוט.</li>
+    <li><b>Archigos 4.1.</b> Goemans, Henk E., Kristian Skrede Gleditsch &amp; Giacomo Chiozza, ״Introducing Archigos: A Dataset of Political Leaders,״ <i>Journal of Peace Research</i> 46(2), 2009. הערה: נמצאו סתירות בתאריכי לידה; ראו סטטוס אימות בכל עמוד מנהיג.</li>
+    <li><b>Cliopatria / Seshat.</b> Seshat: Global History Databank, Cliopatria geospatial dataset (2025), CC BY-NC-SA 4.0. Turchin, P. et al., ״Seshat: The Global History Databank,״ <i>Cliodynamics</i> 6(1), 2015.</li>
+    <li><b>UCDP/PRIO Armed Conflict Dataset v25.1.</b> Davies, Pettersson &amp; Öberg (2025), <i>Journal of Peace Research</i>; Gleditsch et al. (2002). למבחן 2001–2024 בלבד.</li>
+    <li><b>Wikidata</b> (P569) שימש רק לאימות תאריכי לידה, לא כמקור ראשוני.</li>
+    <li><b>Swiss Ephemeris</b>, Astrodienst AG, גרסה 2.10.03; קובצי se1 רשמיים. רישיון AGPL-3.0.</li>
+  </ul>
+  <h2>דוח כיסוי</h2>
+  <div id="cov"><div class="notice">טוען…</div></div>
+</main>
+<script src="js/app.js"></script>
+<script>loadJSON('meta').then(m => document.getElementById('ver').textContent = m.research_version).catch(() => {});
+fetch('data/coverage_report.md').then(r => r.text()).then(t => { document.getElementById('cov').innerHTML = '<pre style="white-space:pre-wrap;font-family:var(--font-ui);font-size:.85rem;background:var(--white);padding:1rem;border:1px solid var(--line);border-radius:8px;direction:rtl">' + esc(t) + '</pre>'; }).catch(() => document.getElementById('cov').innerHTML = '<div class="notice empty">הדוח לא נטען.</div>');</script>
+</body></html>

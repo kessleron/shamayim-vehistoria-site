@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ציר זמן | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">ציר זמן אינטראקטיבי</p>
+  <h1>ארבעת אלפים שנה על ציר אחד</h1>
+  <p class="lede">גרור להזזה, גלגל העכבר או הכפתורים לזום, לחיצה על נקודה בודדת פותחת את עמוד האירוע. הזמן זורם מימין (עבר) לשמאל (הווה). במקלדת: חיצים להזזה, פלוס ומינוס לזום.</p>
+  <div class="controls" role="search">
+    <label>חיפוש<input type="search" id="f-q" placeholder="שם אירוע, מקום, סוג"></label>
+    <label>סוג אירוע<select id="f-cat"><option value="all">הכול</option><option value="war_onset">פתיחת מלחמה</option><option value="leader_entry">כניסת מנהיג</option><option value="leader_exit_regular">יציאת מנהיג (סדירה)</option><option value="leader_exit_irregular">יציאת מנהיג (בלתי סדירה)</option><option value="polity_start">ייסוד ישות מדינית</option><option value="polity_end">סיום ישות מדינית</option></select></label>
+    <label>מאגר<select id="f-ds"></select></label>
+    <label>אזור<select id="f-rg"></select></label>
+    <label>דיוק תיארוך<select id="f-prec"><option value="all">הכול</option><option value="day">יום</option><option value="month">חודש</option><option value="year">שנה</option></select></label>
+    <label>משנה<input type="number" id="f-y0" placeholder="-2000" style="min-width:6rem"></label>
+    <label>עד שנה<input type="number" id="f-y1" placeholder="2030" style="min-width:6rem"></label>
+    <label>תצורות פלנטריות<select id="f-asp"></select></label>
+    <label>קפיצה לשנה<span style="display:flex;gap:.3rem"><input type="number" id="f-goto" style="min-width:6rem" placeholder="1939"><button id="goto" type="button">עבור</button></span></label>
+    <span style="display:flex;gap:.3rem"><button type="button" id="zin" aria-label="זום פנימה">+</button><button type="button" id="zout" aria-label="זום החוצה">−</button><button type="button" id="zall" class="secondary">כל הטווח</button></span>
+  </div>
+  <div id="tl-status" aria-live="polite"></div>
+  <div id="tl-wrap"><canvas id="tl"></canvas><div id="tl-tip" role="tooltip"></div></div>
+  <div class="legend"><span><i style="background:#8f2f2f"></i>פתיחת מלחמה</span><span><i style="background:#2f6b4f"></i>כניסת מנהיג</span><span><i style="background:#3a5680"></i>יציאה סדירה</span><span><i style="background:#9a6a12"></i>יציאה בלתי סדירה</span><span><i style="background:#b5653a"></i>ייסוד ישות</span><span><i style="background:#6b6257"></i>סיום ישות</span><span><i style="background:rgba(181,101,58,.4)"></i>היבט מדויק (כשנבחר)</span></div>
+  <p class="small">שנים לפני הספירה מוצגות כ״לפנה״ס״. אירוע שתאריכו ידוע רק ברמת שנה ממוקם באמצע השנה. לפני 1400 המאגר מכיל ישויות מדיניות בלבד (ראו <a href="data.html">דוח כיסוי</a>).</p>
+  <h2>אירועים בתצוגה <span class="small" id="tl-count"></span></h2>
+  <ul class="list" id="tl-list" aria-live="polite"></ul>
+</main>
+<script src="js/app.js"></script><script src="js/timeline.js"></script>
+</body></html>

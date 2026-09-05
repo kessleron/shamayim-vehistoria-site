@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>תוצאות | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="kicker">תוצאות</p><h1>מה נתמך, מה לא, ומה אי אפשר להכריע</h1>
+  <p class="lede">שש משפחות השערות, שנוסחו לפני הצלבת הנתונים. לכל אחת: גודל ההשפעה שנמדד, רווח סמך, ערך p לפני ואחרי תיקון לריבוי בדיקות, ובדיקות רגישות. ״נתמכת״ פירושו: עמדה בסף שנקבע מראש גם בנתוני הפיתוח וגם בנתוני האימות.</p>
+  <div class="notice">קריטריון ההצלחה (פרוטוקול §8): גודל השפעה ≥ הסף שנקבע, p&lt;0.05 אחרי Holm בתוך המשפחה, יציבות ברוב בדיקות הרגישות, ותוצאה דומה במחצית האימות. ״לא ניתן להכריע״ כאשר העוצמה הסטטיסטית לגודל ההשפעה שנקבע נמוכה מ־0.8.</div>
+  <div id="content"><div class="notice">טוען תוצאות…</div></div>
+  <h2 id="power">עוצמה סטטיסטית</h2>
+  <div id="power-box"><div class="notice">טוען…</div></div>
+  <h2 id="limits">מגבלות שכל קורא צריך לדעת</h2>
+  <ul>
+    <li><b>תיעוד לא אחיד.</b> לפני 1400 אין קטלוג מלחמות שיטתי; לפני 1800 המאגר מוטה לאירופה. המסקנות מוגבלות לאוכלוסיות ולתקופות שנבדקו.</li>
+    <li><b>מחזורים מעטים.</b> שבתאי–פלוטו משלים מחזור כל 33 שנה בערך: 18 מחזורים ב־600 שנה, 6 בתקופת COW. מדד ברבו נשלט על ידי מחזור של כ־170 שנה: פחות מארבעה מחזורים בכל המאגר.</li>
+    <li><b>אין שעות.</b> אין שעת לידה לאף מנהיג במאגר ואין שעה לאף אירוע. אופק, בתים ומיקום ירח מדויק אינם נבדקים.</li>
+    <li><b>מתאם אינו סיבתיות.</b> גם תוצאה חיובית יציבה הייתה מצריכה הסבר; תוצאה שלילית אינה מפריכה ״את האסטרולוגיה״, רק את הטענה כפי שנוסחה ונבדקה.</li>
+    <li><b>כפילות בין מאגרים.</b> Brecke ו־COW חופפים ב־1816–2000. הם נבדקים בנפרד ואינם נספרים כאישוש כפול.</li>
+  </ul>
+</main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  const box = document.getElementById('content'); let R; try { R = await loadJSON('results'); } catch (e) { box.innerHTML = '<div class="notice error">שגיאה בטעינה.</div>'; return; }
+  const fams = Object.entries(R).filter(([k]) => /^H\d/.test(k)); if (!fams.length) { box.innerHTML = '<div class="notice empty">התוצאות טרם פורסמו.</div>'; return; }
+  const f2 = v => v == null ? '—' : (+v).toFixed(2), f3 = v => v == null ? '—' : (+v).toFixed(3);
+  box.innerHTML = fams.map(([k, r]) => {
+    const prim = r.tests.filter(t => !/sens\.|excl\./.test(t.test)), sens = r.tests.filter(t => /sens\.|excl\./.test(t.test));
+    const thr = r.threshold_rr ?? r.threshold_or ?? r.threshold_rho; const effKey = t => 'rate_ratio' in t ? 'rate_ratio' : 'odds_ratio' in t ? 'odds_ratio' : 'spearman_rho_index_vs_detrended_onsets';
+    const ok = t => Math.abs(t[effKey(t)]) >= thr && (t.p_holm ?? 1) < 0.05; const dev = prim.filter(t => /dev/.test(t.test)), val = prim.filter(t => /val/.test(t.test));
+    const devOk = dev.length ? dev.some(ok) : null, valOk = val.some(ok); const [cls, verdict] = devOk && valOk ? ['ok', 'נתמכת'] : (!devOk && valOk) ? ['warn', 'אות חלקי: לא עומד בקריטריון (פיתוח + אימות)'] : ['bad', 'לא נתמכת'];
+    const row = t => `<tr><td>${esc(t.test)}</td><td class="num">${t.n_onsets ?? t.n_events ?? t.n_exits ?? t.n_leaders ?? t.n_years ?? ''}</td><td class="num">${f2(t[effKey(t)])}</td><td class="num">${t.ci95 ? f2(t.ci95[0]) + '–' + f2(t.ci95[1]) : '—'}</td><td class="num">${f3(t.p_perm ?? t.p_surrogate)}</td><td class="num">${f3(t.p_holm)}</td><td class="num">${t.n_perm ?? t.n_surrogates ?? ''}</td></tr>`;
+    return `<section id="${k}" class="card"><span class="tag ${cls}">${verdict}</span><h2 style="border:0;padding:0;margin-top:.4rem">${esc(r.hypothesis_he || r.hypothesis)}</h2><p class="small">סף שנקבע מראש: ${thr}${r.independent_cycles ? ' · מחזורים עצמאיים: ' + esc(JSON.stringify(r.independent_cycles)) : ''}${r.n_conjunctions ? ' · צמידויות: ' + r.n_conjunctions + ', מעברי יסוד: ' + r.n_shifts : ''}${r.birthdate_verification ? ' · אימות תאריכי לידה: ' + esc(JSON.stringify(r.birthdate_verification)) : ''}</p>
+    <h3>מבחנים ראשיים (פיתוח / אימות)</h3><div class="table-wrap"><table><thead><tr><th>מבחן</th><th>N</th><th>גודל השפעה</th><th>רווח סמך 95%</th><th>p (permutation)</th><th>p אחרי Holm</th><th>מס׳ הרצות</th></tr></thead><tbody>${prim.map(row).join('')}</tbody></table></div>
+    ${sens.length ? `<h3>בדיקות רגישות</h3><div class="table-wrap"><table><thead><tr><th>מבחן</th><th>N</th><th>גודל השפעה</th><th>רווח סמך</th><th>p</th><th></th><th></th></tr></thead><tbody>${sens.map(row).join('')}</tbody></table></div>` : ''}
+    ${r.note ? `<p class="small">${esc(r.note)}</p>` : ''}</section>`; }).join('');
+  try { const p = await (await fetch('data/power.json')).json(); document.getElementById('power-box').innerHTML = `<div class="table-wrap"><table><thead><tr><th>עיצוב</th><th>RR=1.0 (שגיאת סוג I)</th><th>1.15</th><th>1.30</th><th>1.50</th></tr></thead><tbody>${Object.entries(p).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${v['1.0'].toFixed(2)}</td><td class="num">${v['1.15'].toFixed(2)}</td><td class="num">${v['1.3'].toFixed(2)}</td><td class="num">${v['1.5'].toFixed(2)}</td></tr>`).join('')}</tbody></table></div><p class="small">סימולציה: 200 חזרות לכל תא, permutation circular-shift על סדרת ההיבטים האמיתית. עוצמה מתחת ל־0.8 לסף 1.30 = ״לא ניתן להכריע״.</p>`; } catch (e) { document.getElementById('power-box').innerHTML = '<div class="notice empty">חישוב העוצמה טרם פורסם.</div>'; }
+})();
+</script>
+</body></html>

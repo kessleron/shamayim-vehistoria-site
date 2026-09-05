@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>אירוע | שמיים והיסטוריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<main id="main" class="wrap">
+  <p class="breadcrumb"><a href="events.html">אירועים</a> › <span id="bc">…</span></p>
+  <div id="content"><div class="notice">טוען…</div></div>
+</main>
+<script src="js/app.js"></script>
+<script>
+(async () => {
+  const box = document.getElementById('content'); const id = qs('id');
+  if (!id) { box.innerHTML = '<div class="notice empty">לא צוין מזהה אירוע. <a href="events.html">לרשימת האירועים</a>.</div>'; return; }
+  let EV; try { EV = await loadJSON('events'); } catch (e) { box.innerHTML = '<div class="notice error">שגיאה בטעינת הנתונים.</div>'; return; }
+  const e = EV.find(x => x.id === id); if (!e) { box.innerHTML = `<div class="notice empty">האירוע <code>${esc(id)}</code> לא נמצא במאגר.</div>`; return; }
+  document.title = e.n + ' | שמיים והיסטוריה'; document.getElementById('bc').textContent = e.n;
+  const related = EV.filter(x => x.pid === e.pid && x.id !== e.id);
+  const q = { day: 'מלא (יום)', month: 'חודש', year: 'שנה בלבד' }[e.p];
+  let h = `<p class="kicker">${e.ch}</p><h1>${esc(e.n)}</h1>
+  <div class="grid c2"><div class="card"><h3>נתוני האירוע</h3><table><tr><th>מזהה קבוע</th><td class="num">${e.id}</td></tr><tr><th>תאריך</th><td class="num">${fmtDate(e)}${e.ey ? ' – ' + fmtYear(e.ey) : ''}</td></tr><tr><th>לוח שנה מקורי</th><td>${e.cal === 'julian' ? 'יוליאני' : 'גרגוריאני'}</td></tr><tr><th>רמת דיוק</th><td>${q}</td></tr><tr><th>מקום / אזור</th><td>${esc(e.pl || e.rg || 'לא צוין במקור')}</td></tr>${e.fat ? `<tr><th>הרוגים (לפי המקור)</th><td class="num">${e.fat.toLocaleString('he')}</td></tr>` : ''}<tr><th>תיאור</th><td>${esc(e.desc)}</td></tr><tr><th>מקור</th><td>${esc(e.src)}</td></tr><tr><th>מקורות עצמאיים</th><td>1 (מאגר אקדמי אחד; לא נספרים העתקים)</td></tr><tr><th>אירועים באותו תהליך</th><td>${related.length ? related.map(r => `<a href="event.html?id=${encodeURIComponent(r.id)}">${esc(r.n)}</a>`).join(', ') : 'אין'}</td></tr></table>
+  <p><a class="btn secondary" href="timeline.html?year=${e.y}">הצג על ציר הזמן</a> <a class="btn secondary" href="compare.html?a=${encodeURIComponent(e.id)}">השווה לאירוע אחר</a></p></div>
+  <div class="card"><h3>המפה האסטרולוגית</h3><div id="wheel"></div><div id="wheel-note"></div></div></div>`;
+  box.innerHTML = h;
+  const w = document.getElementById('wheel'), note = document.getElementById('wheel-note');
+  if (!e.pos || !Object.keys(e.pos).length) { w.innerHTML = '<div class="notice empty">אין חישוב: התאריך מחוץ לטווח האפמריס או חסר.</div>'; }
+  else { drawWheel(w, e.pos, { label: 'מפת האירוע ' + e.n, orb: 8 });
+    const asp = hardAspects(e.pos, 8);
+    note.innerHTML = `<p class="settings">הגדרות: ${e.pk === 'daily' ? 'תאריך האירוע, 12:00 UT (אין שעה במקור)' : 'מיקום ב־1 בינואר של שנת האירוע, כוכבי לכת איטיים בלבד (דיוק שנה)'} · גאוצנטרי · גלגל טרופי · Swiss Ephemeris · ללא בתים ואופק (אין שעה ומקום מדויקים)</p>
+    <table><tr><th>גרם שמיים</th><th>מעלה</th></tr>${Object.entries(e.pos).map(([p, l]) => `<tr><td>${GLYPH[p]} ${PLANET_HE[p]}</td><td class="num">${fmtLon(l)}</td></tr>`).join('')}</table>
+    <h3>היבטים קשים (טווח 8°)</h3>${asp.length ? '<ul>' + asp.map(a => `<li>${PLANET_HE[a.a]} ${a.nm} ${PLANET_HE[a.b]} <span class="small">(סטייה ${a.dev.toFixed(1)}°)</span></li>`).join('') + '</ul>' : '<p class="small">אין היבטים קשים בטווח.</p>'}
+    <p class="small">${e.pk === 'daily' && e.p === 'month' ? 'תאריך ברמת חודש: החישוב ל־15 בחודש. ירח ומרקורי אינם אמינים ברמה זו.' : ''} מפה של אירוע אינה ראיה. ראו <a href="results.html">תוצאות</a> להשוואה סטטיסטית.</p>`; }
+})();
+</script>
+</body></html>
